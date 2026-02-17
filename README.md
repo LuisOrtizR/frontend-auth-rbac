@@ -183,6 +183,6 @@ Asegúrate de tener el backend corriendo antes de iniciar el frontend.
 
 <div align="center">
 
-**Sistema de Gestión de Accesos y Usuarios** · Vue 3 + TypeScript · 2025
+**Sistema de Gestión de Accesos y Usuarios** · Vue 3 + TypeScript · 2026
 
 </div>
