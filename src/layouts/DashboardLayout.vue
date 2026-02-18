@@ -256,13 +256,14 @@ onMounted(async () => {
     </button>
 
     <div class="text-right min-w-0">
-      <p class="text-sm font-semibold text-gray-800 truncate">
-        {{ auth.user?.company ?? 'HelpDesk' }}
-      </p>
-      <p class="text-xs text-gray-500 truncate">
-        {{ displayRole }}
-      </p>
-    </div>
+  <p class="text-sm font-semibold text-gray-800 truncate">
+    {{ auth.user?.name ?? 'HelpDesk' }}
+  </p>
+  <p class="text-xs text-gray-500 truncate">
+    {{ displayRole }}
+  </p>
+</div>
+
   </div>
 </div>
 
