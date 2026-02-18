@@ -1,18 +1,10 @@
-import axios from "axios";
+import api from "@/api/axios"; // ← usa el axios compartido con interceptors
 import type {
   AuthResponse,
   RefreshResponse,
   RegisterDTO,
   LoginDTO,
 } from "@/types/auth.types";
-
-const api = axios.create({
-  baseURL: "http://localhost:3000/api",
-});
-
-/* ======================================================
-   AUTH API
-====================================================== */
 
 export const authApi = {
   login(payload: LoginDTO) {
@@ -24,12 +16,18 @@ export const authApi = {
   },
 
   refresh(refreshToken: string) {
-    return api.post<RefreshResponse>("/auth/refresh", {
-      refreshToken,
-    });
+    return api.post<RefreshResponse>("/auth/refresh", { refreshToken });
   },
 
   logout(refreshToken: string) {
     return api.post("/auth/logout", { refreshToken });
+  },
+
+  forgot(email: string) {
+    return api.post("/auth/forgot", { email });
+  },
+
+  reset(token: string, password: string) {
+    return api.post("/auth/reset", { token, password });
   },
 };

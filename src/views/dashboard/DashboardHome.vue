@@ -140,204 +140,172 @@ const getPriorityColor = (priority: string) => {
 
 onMounted(loadStats);
 </script>
-
 <template>
-  <div>
+  <div class="space-y-6">
+
     <!-- HEADER -->
-    <div class="mb-6">
-      <h1 class="text-3xl font-bold text-gray-800">
+    <div class="space-y-1">
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-800 wrap-break-word">
         ¡Bienvenido, {{ authStore.user?.name }}!
       </h1>
-      <p class="text-gray-500 mt-1">
+      <p class="text-sm md:text-base text-gray-500">
         {{ isAdmin ? "Panel de Administración" : "Mi Panel" }}
       </p>
     </div>
 
     <!-- LOADING -->
-    <div v-if="loading" class="text-gray-400 py-12 text-center">
+    <div v-if="loading" class="text-gray-400 py-16 text-center">
       Cargando estadísticas...
     </div>
 
     <template v-else>
-      <!-- ── STATS CARDS ── -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <!-- Total Usuarios (solo admin) -->
+
+      <!-- STATS CARDS -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
+
         <div
           v-if="isAdmin"
-          class="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500"
+          class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100"
         >
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm font-medium">Total Usuarios</p>
-              <p class="text-3xl font-bold text-gray-800 mt-1">{{ stats.users }}</p>
-            </div>
-            <div class="bg-blue-100 p-3 rounded-full">
-              <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-            </div>
-          </div>
+          <p class="text-xs text-gray-400 font-medium">Total Usuarios</p>
+          <p class="text-2xl md:text-3xl font-bold text-gray-800 mt-1">
+            {{ stats.users }}
+          </p>
         </div>
 
-        <!-- Total Roles (solo admin) -->
         <div
           v-if="isAdmin"
-          class="bg-white rounded-xl shadow-md p-6 border-l-4 border-purple-500"
+          class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100"
         >
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm font-medium">Total Roles</p>
-              <p class="text-3xl font-bold text-gray-800 mt-1">{{ stats.roles }}</p>
-            </div>
-            <div class="bg-purple-100 p-3 rounded-full">
-              <svg class="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            </div>
-          </div>
+          <p class="text-xs text-gray-400 font-medium">Total Roles</p>
+          <p class="text-2xl md:text-3xl font-bold text-gray-800 mt-1">
+            {{ stats.roles }}
+          </p>
         </div>
 
-        <!-- Total Permisos (solo admin) -->
         <div
           v-if="isAdmin"
-          class="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500"
+          class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100"
         >
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm font-medium">Total Permisos</p>
-              <p class="text-3xl font-bold text-gray-800 mt-1">{{ stats.permissions }}</p>
-            </div>
-            <div class="bg-green-100 p-3 rounded-full">
-              <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-              </svg>
-            </div>
-          </div>
+          <p class="text-xs text-gray-400 font-medium">Total Permisos</p>
+          <p class="text-2xl md:text-3xl font-bold text-gray-800 mt-1">
+            {{ stats.permissions }}
+          </p>
         </div>
 
-        <!-- Total Solicitudes -->
-        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-orange-500">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-gray-400 text-sm font-medium">
-                {{ isAdmin ? "Total Solicitudes" : "Mis Solicitudes" }}
-              </p>
-              <p class="text-3xl font-bold text-gray-800 mt-1">{{ stats.requests.total }}</p>
-              <p class="text-xs text-gray-400 mt-1">
-                {{ stats.requests.open }} abiertas · {{ stats.requests.in_progress }} en progreso
-              </p>
-            </div>
-            <div class="bg-orange-100 p-3 rounded-full">
-              <svg class="w-7 h-7 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-          </div>
+        <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100">
+          <p class="text-xs text-gray-400 font-medium">
+            {{ isAdmin ? "Total Solicitudes" : "Mis Solicitudes" }}
+          </p>
+          <p class="text-2xl md:text-3xl font-bold text-gray-800 mt-1">
+            {{ stats.requests.total }}
+          </p>
+          <p class="text-xs text-gray-400 mt-1">
+            {{ stats.requests.open }} abiertas · {{ stats.requests.in_progress }} en progreso
+          </p>
         </div>
+
       </div>
 
-      <!-- ── DESGLOSE DE SOLICITUDES ── -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <!-- Activas -->
-        <div class="bg-white rounded-xl shadow p-6">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="text-gray-700 font-semibold">Activas</h3>
-            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-bold">
+      <!-- DESGLOSE -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+
+        <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 space-y-3">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-semibold text-gray-700">Activas</h3>
+            <span class="text-xs font-bold text-blue-600">
               {{ stats.requests.open + stats.requests.in_progress }}
             </span>
           </div>
-          <div class="w-full bg-gray-100 rounded-full h-2 mb-3">
+          <div class="w-full bg-gray-100 rounded-full h-2">
             <div
               class="bg-blue-500 h-2 rounded-full transition-all"
               :style="{ width: `${activePercent}%` }"
             />
           </div>
-          <div class="flex justify-between text-xs text-gray-400">
-            <span>Abiertas: <strong class="text-gray-600">{{ stats.requests.open }}</strong></span>
-            <span>En progreso: <strong class="text-gray-600">{{ stats.requests.in_progress }}</strong></span>
-            <span>Esp. usuario: <strong class="text-gray-600">{{ stats.requests.waiting_user }}</strong></span>
+          <div class="text-xs text-gray-500 space-y-1">
+            <div>Abiertas: {{ stats.requests.open }}</div>
+            <div>En progreso: {{ stats.requests.in_progress }}</div>
+            <div>Esp. usuario: {{ stats.requests.waiting_user }}</div>
           </div>
         </div>
 
-        <!-- Resueltas / Cerradas -->
-        <div class="bg-white rounded-xl shadow p-6">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="text-gray-700 font-semibold">Resueltas</h3>
-            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold">
+        <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 space-y-3">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-semibold text-gray-700">Resueltas</h3>
+            <span class="text-xs font-bold text-green-600">
               {{ stats.requests.resolved + stats.requests.closed }}
             </span>
           </div>
-          <div class="w-full bg-gray-100 rounded-full h-2 mb-3">
+          <div class="w-full bg-gray-100 rounded-full h-2">
             <div
               class="bg-green-500 h-2 rounded-full transition-all"
               :style="{ width: `${resolvedPercent}%` }"
             />
           </div>
-          <div class="flex justify-between text-xs text-gray-400">
-            <span>Resueltas: <strong class="text-gray-600">{{ stats.requests.resolved }}</strong></span>
-            <span>Cerradas: <strong class="text-gray-600">{{ stats.requests.closed }}</strong></span>
+          <div class="text-xs text-gray-500 space-y-1">
+            <div>Resueltas: {{ stats.requests.resolved }}</div>
+            <div>Cerradas: {{ stats.requests.closed }}</div>
           </div>
         </div>
 
-        <!-- Rechazadas -->
-        <div class="bg-white rounded-xl shadow p-6">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="text-gray-700 font-semibold">Rechazadas</h3>
-            <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-bold">
+        <div class="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 space-y-3">
+          <div class="flex justify-between items-center">
+            <h3 class="text-sm font-semibold text-gray-700">Rechazadas</h3>
+            <span class="text-xs font-bold text-red-600">
               {{ stats.requests.rejected }}
             </span>
           </div>
-          <div class="w-full bg-gray-100 rounded-full h-2 mb-3">
+          <div class="w-full bg-gray-100 rounded-full h-2">
             <div
               class="bg-red-500 h-2 rounded-full transition-all"
               :style="{ width: `${rejectedPercent}%` }"
             />
           </div>
-          <p class="text-xs text-gray-400">
-            {{ rejectedPercent.toFixed(0) }}% del total de solicitudes
+          <p class="text-xs text-gray-500">
+            {{ rejectedPercent.toFixed(0) }}% del total
           </p>
         </div>
+
       </div>
 
-      <!-- ── SOLICITUDES RECIENTES ── -->
-      <div class="bg-white rounded-xl shadow-md p-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Solicitudes Recientes</h2>
+      <!-- SOLICITUDES RECIENTES -->
+      <div class="bg-white rounded-2xl shadow-sm p-5 md:p-6 border border-gray-100 space-y-4">
+
+        <h2 class="text-lg md:text-xl font-bold text-gray-800">
+          Solicitudes Recientes
+        </h2>
 
         <div v-if="recentRequests.length === 0" class="text-gray-400 text-center py-10">
           No hay solicitudes registradas
         </div>
 
         <div v-else class="space-y-3">
+
           <div
             v-for="request in recentRequests"
             :key="request.id"
-            class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
+            class="flex flex-col md:flex-row md:items-center gap-3 p-4 bg-gray-50 rounded-xl"
           >
-            <div class="flex items-center gap-3 flex-1 min-w-0">
-              <!-- Indicador de prioridad -->
+            <div class="flex items-start gap-3 flex-1 min-w-0">
               <div
-                class="w-2 h-10 rounded-full shrink-0"
+                class="w-2 h-12 rounded-full shrink-0"
                 :class="getPriorityColor(request.priority)"
-                :title="`Prioridad: ${request.priority}`"
               />
-              <div class="min-w-0">
-                <h3 class="font-semibold text-gray-800 truncate">{{ request.title }}</h3>
-                <p class="text-sm text-gray-500 truncate max-w-md">{{ request.description }}</p>
-                <div class="flex items-center gap-3 mt-1">
-                  <span v-if="isAdmin" class="text-xs text-gray-400">
-                    {{ request.email }}
-                  </span>
-                  <span class="text-xs text-gray-400">
-                    {{ new Date(request.created_at).toLocaleDateString("es-ES") }}
-                  </span>
-                  <span
-                    v-if="request.priority"
-                    class="text-xs text-gray-400 capitalize"
-                  >
+
+              <div class="min-w-0 space-y-1">
+                <h3 class="font-semibold text-gray-800 text-sm md:text-base wrap-break-word">
+                  {{ request.title }}
+                </h3>
+
+                <p class="text-xs md:text-sm text-gray-500 wrap-break-word">
+                  {{ request.description }}
+                </p>
+
+                <div class="flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-400">
+                  <span v-if="isAdmin">{{ request.email }}</span>
+                  <span>{{ new Date(request.created_at).toLocaleDateString("es-ES") }}</span>
+                  <span v-if="request.priority" class="capitalize">
                     Prioridad: {{ request.priority }}
                   </span>
                 </div>
@@ -346,20 +314,23 @@ onMounted(loadStats);
 
             <span
               :class="getStatusColor(request.status)"
-              class="px-3 py-1 rounded-full text-xs font-medium ml-4 shrink-0"
+              class="self-start md:self-auto px-3 py-1 rounded-full text-xs font-medium"
             >
               {{ getStatusText(request.status) }}
             </span>
           </div>
+
         </div>
 
         <router-link
           to="/dashboard/requests"
-          class="block text-center mt-6 text-blue-600 hover:text-blue-700 font-medium transition"
+          class="block text-center text-sm md:text-base text-blue-600 hover:text-blue-700 font-medium"
         >
           Ver todas las solicitudes →
         </router-link>
+
       </div>
+
     </template>
   </div>
 </template>
