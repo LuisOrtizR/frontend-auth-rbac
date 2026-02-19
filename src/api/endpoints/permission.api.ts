@@ -4,7 +4,8 @@ export interface Permission {
   id: string;
   name: string;
   description: string | null;
-  created_at?: string;
+  created_at: string;
+  is_protected: boolean;
 }
 
 export interface PermissionListResponse {
@@ -22,25 +23,31 @@ export interface CreatePermissionDTO {
 }
 
 export const permissionApi = {
-  getAll(page = 1, limit = 10, search = "") {
+  getAll(
+    page = 1,
+    limit = 10,
+    search = "",
+    sort = "created_at",
+    order: "ASC" | "DESC" = "DESC"
+  ) {
     return api.get<PermissionListResponse>("/permissions", {
-      params: { page, limit, search },
+      params: { page, limit, search, sort, order },
     });
   },
 
-  getById(id: string) {
-    return api.get(`/permissions/${id}`);
+  getById(uuid: string) {
+    return api.get(`/permissions/${uuid}`);
   },
 
   create(data: CreatePermissionDTO) {
     return api.post("/permissions", data);
   },
 
-  update(id: string, data: CreatePermissionDTO) {
-    return api.put(`/permissions/${id}`, data);
+  update(uuid: string, data: CreatePermissionDTO) {
+    return api.put(`/permissions/${uuid}`, data);
   },
 
-  delete(id: string) {
-    return api.delete(`/permissions/${id}`);
+  delete(uuid: string) {
+    return api.delete(`/permissions/${uuid}`);
   },
 };
