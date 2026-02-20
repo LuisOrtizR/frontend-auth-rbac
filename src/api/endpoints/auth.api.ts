@@ -1,4 +1,4 @@
-import api from "@/api/axios"; // ← usa el axios compartido con interceptors
+import api from "@/api/axios";
 import type {
   AuthResponse,
   RefreshResponse,
