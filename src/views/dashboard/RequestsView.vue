@@ -124,8 +124,6 @@ const openDetail = (r: Request) => {
   showDetailModal.value = true;
 };
 
-/* === CONFIG VISUAL IGUAL AL PRIMER COMPONENTE === */
-
 const statusConfig: Record<
   string,
   { color: string; dot: string; label: string }
@@ -203,7 +201,6 @@ onMounted(fetchRequests);
       </div>
     </div>
 
-    <!-- ERROR -->
     <div
       v-if="error"
       class="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm"
@@ -211,7 +208,6 @@ onMounted(fetchRequests);
       ⚠️ {{ error }}
     </div>
 
-    <!-- LOADING -->
     <div
       v-if="loading"
       class="flex items-center justify-center py-12 gap-3 text-gray-400"
@@ -235,7 +231,6 @@ onMounted(fetchRequests);
       <span class="text-sm">Cargando...</span>
     </div>
 
-    <!-- ================= TABLE DESKTOP ================= -->
     <div v-else class="hidden md:block">
       <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
@@ -360,7 +355,6 @@ onMounted(fetchRequests);
       </div>
     </div>
 
-    <!-- ================= MOBILE CARDS ================= -->
     <div class="md:hidden space-y-3">
       <div
         v-for="r in requests"
@@ -419,9 +413,6 @@ onMounted(fetchRequests);
       </div>
     </div>
 
-    <!-- ================= MODALES ================= -->
-
-    <!-- CREATE MODAL -->
     <div
       v-if="showCreateModal"
       class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4"
