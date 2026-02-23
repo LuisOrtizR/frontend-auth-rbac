@@ -78,6 +78,11 @@ const router = createRouter({
           component: () => import("@/views/dashboard/ManageRequestsView.vue"),
           meta: { requiresAnyRole: ['admin', 'supervisor'] }, // Admin o Supervisor
         },
+        {
+          path: "deleted-requests",
+          name: "deleted-requests",
+          component: () => import("@/views/dashboard/Deletedrequestsview.vue"),
+        },
       ],
     },
   ],

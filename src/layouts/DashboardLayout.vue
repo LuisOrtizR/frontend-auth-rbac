@@ -27,7 +27,6 @@ const canViewPermissions = computed(() => auth.hasPermission("manage_permissions
 const canManageRequests = computed(
   () => auth.hasPermission("requests_read.all") || auth.hasRole("supervisor") || auth.isAdmin
 );
-const requestsLabel = computed(() => (auth.isAdmin || auth.hasRole("supervisor") ? "Solicitudes" : "Mis Solicitudes"));
 
 const handleLogout = async () => {
   await auth.logout();
@@ -71,6 +70,8 @@ onMounted(async () => {
         </div>
 
         <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+          <p class="px-4 text-xs font-semibold text-gray-400 uppercase mb-2">Solicitudes</p>
+
           <router-link to="/dashboard" v-slot="{ isExactActive, navigate }">
             <div
               @click="navigate"
@@ -79,7 +80,7 @@ onMounted(async () => {
                 isExactActive ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
               ]"
             >
-              🏠 Home
+              🏠 Dashboard
             </div>
           </router-link>
 
@@ -91,7 +92,7 @@ onMounted(async () => {
                 isActive ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
               ]"
             >
-              📋 {{ requestsLabel }}
+              📋 Pendientes
             </div>
           </router-link>
 
@@ -103,7 +104,19 @@ onMounted(async () => {
                 isActive ? 'bg-violet-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
               ]"
             >
-              🛠️ Gestionar Tickets
+              🛠️ Gestionar
+            </div>
+          </router-link>
+
+          <router-link to="/dashboard/deleted-requests" v-slot="{ isActive, navigate }">
+            <div
+              @click="navigate"
+              :class="[
+                'px-4 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer',
+                isActive ? 'bg-red-500 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
+              ]"
+            >
+              🗑️ Eliminadas
             </div>
           </router-link>
 
@@ -167,6 +180,8 @@ onMounted(async () => {
           </div>
 
           <nav class="p-4 space-y-2">
+            <p class="px-4 text-xs font-semibold text-gray-400 uppercase mb-2">Solicitudes</p>
+
             <router-link to="/dashboard" v-slot="{ isExactActive, navigate }">
               <div
                 @click="{ navigate(); mobileOpen = false }"
@@ -175,7 +190,7 @@ onMounted(async () => {
                   isExactActive ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-700 hover:bg-gray-100'
                 ]"
               >
-                🏠 Home
+                🏠 Dashboard
               </div>
             </router-link>
 
@@ -187,7 +202,7 @@ onMounted(async () => {
                   isActive ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-700 hover:bg-gray-100'
                 ]"
               >
-                📋 {{ requestsLabel }}
+                📋 Pendientes
               </div>
             </router-link>
 
@@ -199,11 +214,25 @@ onMounted(async () => {
                   isActive ? 'bg-violet-600 text-white shadow-sm' : 'text-gray-700 hover:bg-gray-100'
                 ]"
               >
-                🛠️ Gestionar Tickets
+                🛠️ Gestionar
+              </div>
+            </router-link>
+
+            <router-link to="/dashboard/deleted-requests" v-slot="{ isActive, navigate }">
+              <div
+                @click="{ navigate(); mobileOpen = false }"
+                :class="[
+                  'px-4 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer',
+                  isActive ? 'bg-red-500 text-white shadow-sm' : 'text-gray-700 hover:bg-gray-100'
+                ]"
+              >
+                🗑️ Eliminadas
               </div>
             </router-link>
 
             <div v-if="canViewUsers || canViewRoles || canViewPermissions" class="border-t pt-3">
+              <p class="px-4 text-xs font-semibold text-gray-400 uppercase mb-2">Administración</p>
+
               <router-link v-if="canViewUsers" to="/dashboard/users" v-slot="{ isActive, navigate }">
                 <div
                   @click="{ navigate(); mobileOpen = false }"
@@ -243,30 +272,29 @@ onMounted(async () => {
           </nav>
 
           <div class="p-4 border-t">
-            <button @click="handleLogout" class="w-full bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl text-sm">Cerrar sesión</button>
+            <button @click="handleLogout" class="w-full bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl text-sm">
+              Cerrar sesión
+            </button>
           </div>
         </aside>
       </div>
 
       <main class="flex-1 flex flex-col">
         <div class="md:hidden bg-white border-b px-4 py-3">
-  <div class="flex items-center justify-between">
-    <button @click="mobileOpen = true">
-      <Bars3Icon class="w-6 h-6 text-gray-700" />
-    </button>
-
-    <div class="text-right min-w-0">
-  <p class="text-sm font-semibold text-gray-800 truncate">
-    {{ auth.user?.name ?? 'HelpDesk' }}
-  </p>
-  <p class="text-xs text-gray-500 truncate">
-    {{ displayRole }}
-  </p>
-</div>
-
-  </div>
-</div>
-
+          <div class="flex items-center justify-between">
+            <button @click="mobileOpen = true">
+              <Bars3Icon class="w-6 h-6 text-gray-700" />
+            </button>
+            <div class="text-right min-w-0">
+              <p class="text-sm font-semibold text-gray-800 truncate">
+                {{ auth.user?.name ?? 'HelpDesk' }}
+              </p>
+              <p class="text-xs text-gray-500 truncate">
+                {{ displayRole }}
+              </p>
+            </div>
+          </div>
+        </div>
 
         <div class="flex-1 p-4 md:p-8">
           <div class="bg-white rounded-3xl shadow-sm border border-gray-200 p-6 min-h-[80vh]">

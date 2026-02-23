@@ -1,7 +1,3 @@
-/* =========================
-   STATUS & PRIORITY
-========================= */
-
 export type RequestStatus =
   | "open"
   | "in_progress"
@@ -16,33 +12,23 @@ export type RequestPriority =
   | "high"
   | "urgent";
 
-/* =========================
-   MODELO PRINCIPAL
-========================= */
-
 export interface Request {
   id: string;
   title: string;
   description: string;
   status: RequestStatus;
   priority: RequestPriority;
-
   user_id: string;
   assigned_to: string | null;
-
   resolution: string | null;
-
   created_at: string;
   updated_at: string;
   resolved_at?: string | null;
   closed_at?: string | null;
-
-  email?: string; // si lo estás enviando desde backend
+  deleted_at?: string | null;
+  deleted_reason?: string | null;
+  email?: string;
 }
-
-/* =========================
-   DTOs
-========================= */
 
 export interface CreateRequestDTO {
   title: string;
