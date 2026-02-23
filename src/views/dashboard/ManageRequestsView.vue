@@ -28,6 +28,11 @@ const history        = ref<any[]>([]);
 const showHistory    = ref(false);
 const historyLoading = ref(false);
 
+const showDeleteModal  = ref(false);
+const deleteTargetId   = ref<string | null>(null);
+const deleteReason     = ref("");
+const deleteReasonError = ref(false);
+
 const canManage = computed(() =>
   auth.hasPermission("requests_read_all") || auth.hasRole("admin") || auth.hasRole("supervisor")
 );
@@ -124,10 +129,33 @@ const loadHistory = async () => {
   }
 };
 
-const remove = async (id: string) => {
-  if (!confirm("¿Eliminar esta solicitud?")) return;
-  try   { await requestApi.delete(id); loadRequests(); }
-  catch (e: any) { alert(e.response?.data?.message || "Error eliminando"); }
+const openDeleteModal = (id: string) => {
+  deleteTargetId.value   = id;
+  deleteReason.value     = "";
+  deleteReasonError.value = false;
+  showDeleteModal.value  = true;
+};
+
+const closeDeleteModal = () => {
+  showDeleteModal.value  = false;
+  deleteTargetId.value   = null;
+  deleteReason.value     = "";
+  deleteReasonError.value = false;
+};
+
+const confirmDelete = async () => {
+  if (!deleteReason.value.trim()) {
+    deleteReasonError.value = true;
+    return;
+  }
+  if (!deleteTargetId.value) return;
+  try {
+    await requestApi.delete(deleteTargetId.value, deleteReason.value.trim());
+    closeDeleteModal();
+    loadRequests();
+  } catch (e: any) {
+    alert(e.response?.data?.message || "Error eliminando");
+  }
 };
 
 const getUserName = (id: string | null | undefined) => {
@@ -172,7 +200,6 @@ const counters = computed(() => [
 
   <div v-else class="space-y-5 min-w-0">
 
-    <!-- HEADER -->
     <div class="flex justify-between items-start">
       <div>
         <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Gestión de Tickets</h1>
@@ -184,12 +211,10 @@ const counters = computed(() => [
       </div>
     </div>
 
-    <!-- ERROR -->
     <div v-if="error" class="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
       <span>⚠️</span> {{ error }}
     </div>
 
-    <!-- CONTADORES -->
     <div class="grid grid-cols-3 md:grid-cols-6 gap-2">
       <div
         v-for="c in counters" :key="c.status"
@@ -203,7 +228,6 @@ const counters = computed(() => [
       </div>
     </div>
 
-    <!-- FILTROS -->
     <div class="flex flex-wrap gap-2 items-center">
       <select v-model="filterStatus" class="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white outline-none focus:ring-2 focus:ring-blue-400">
         <option value="all">Todos los estados</option>
@@ -231,7 +255,6 @@ const counters = computed(() => [
       <span class="text-xs text-gray-400 ml-auto">{{ filtered.length }} resultado{{ filtered.length !== 1 ? 's' : '' }}</span>
     </div>
 
-    <!-- LOADING -->
     <div v-if="loading" class="flex items-center justify-center py-12 gap-3 text-gray-400">
       <svg class="animate-spin h-5 w-5" viewBox="0 0 24 24">
         <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" class="opacity-25"/>
@@ -240,7 +263,6 @@ const counters = computed(() => [
       <span class="text-sm">Cargando...</span>
     </div>
 
-    <!-- TABLA DESKTOP -->
     <div v-else class="hidden md:block min-w-0">
       <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
@@ -303,7 +325,7 @@ const counters = computed(() => [
                     <button @click="openModal(r)" class="bg-blue-600 text-white px-2.5 py-1 rounded-lg hover:bg-blue-700 text-xs font-medium transition-colors whitespace-nowrap">
                       Gestionar
                     </button>
-                    <button v-if="canDelete" @click="remove(r.id)" class="text-red-500 border border-red-200 px-2.5 py-1 rounded-lg hover:bg-red-50 text-xs font-medium transition-colors whitespace-nowrap">
+                    <button v-if="canDelete" @click="openDeleteModal(r.id)" class="text-red-500 border border-red-200 px-2.5 py-1 rounded-lg hover:bg-red-50 text-xs font-medium transition-colors whitespace-nowrap">
                       Eliminar
                     </button>
                   </div>
@@ -321,7 +343,6 @@ const counters = computed(() => [
       </div>
     </div>
 
-    <!-- CARDS MOBILE -->
     <div class="md:hidden space-y-3">
       <div v-for="r in filtered" :key="r.id" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
         <div class="flex justify-between items-start mb-2">
@@ -341,7 +362,7 @@ const counters = computed(() => [
         <div class="text-xs text-gray-400 mb-3">🔧 {{ getUserName(r.assigned_to) }}</div>
         <div class="flex gap-2">
           <button @click="openModal(r)" class="flex-1 bg-blue-600 text-white py-2 rounded-xl text-sm font-medium hover:bg-blue-700 transition-colors">Gestionar</button>
-          <button v-if="canDelete" @click="remove(r.id)" class="flex-1 bg-red-50 text-red-600 border border-red-200 py-2 rounded-xl text-sm font-medium hover:bg-red-100 transition-colors">Eliminar</button>
+          <button v-if="canDelete" @click="openDeleteModal(r.id)" class="flex-1 bg-red-50 text-red-600 border border-red-200 py-2 rounded-xl text-sm font-medium hover:bg-red-100 transition-colors">Eliminar</button>
         </div>
       </div>
       <div v-if="filtered.length === 0" class="text-center py-12 text-gray-400">
@@ -350,7 +371,7 @@ const counters = computed(() => [
       </div>
     </div>
 
-    <!-- MODAL -->
+    <!-- MODAL GESTIONAR -->
     <div v-if="showModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" @click="closeModal">
       <div class="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl" @click.stop>
 
@@ -363,8 +384,6 @@ const counters = computed(() => [
         </div>
 
         <div class="p-6 space-y-5">
-
-          <!-- INFO -->
           <div class="bg-gray-50 rounded-2xl p-4 space-y-2">
             <div class="flex justify-between items-start gap-3">
               <p class="font-semibold text-gray-800">{{ current?.title }}</p>
@@ -381,7 +400,6 @@ const counters = computed(() => [
             </div>
           </div>
 
-          <!-- BLOQUEADO -->
           <div v-if="isLocked" class="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-2xl">
             <span class="text-2xl">🔒</span>
             <div>
@@ -390,7 +408,6 @@ const counters = computed(() => [
             </div>
           </div>
 
-          <!-- FORMULARIO -->
           <div v-else class="space-y-4">
             <div class="grid grid-cols-2 gap-4">
               <div>
@@ -433,7 +450,6 @@ const counters = computed(() => [
             </div>
           </div>
 
-          <!-- HISTORIAL -->
           <div class="border border-gray-100 rounded-2xl overflow-hidden">
             <button @click="loadHistory" :disabled="historyLoading"
               class="w-full flex items-center justify-between px-4 py-3 text-sm text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50">
@@ -461,7 +477,6 @@ const counters = computed(() => [
             </div>
           </div>
 
-          <!-- BOTONES -->
           <div class="flex gap-3 pt-1">
             <button v-if="!isLocked" @click="save" :disabled="saving"
               class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl hover:bg-blue-700 disabled:opacity-50 flex justify-center items-center gap-2 font-medium text-sm transition-colors">
@@ -475,8 +490,57 @@ const counters = computed(() => [
               {{ isLocked ? "Cerrar" : "Cancelar" }}
             </button>
           </div>
-
         </div>
+      </div>
+    </div>
+
+    <!-- MODAL ELIMINAR -->
+    <div v-if="showDeleteModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" @click="closeDeleteModal">
+      <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl" @click.stop>
+
+        <div class="flex justify-between items-center p-6 border-b border-gray-100">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-xl">🗑️</div>
+            <div>
+              <h2 class="text-base font-bold text-gray-900">Eliminar Solicitud</h2>
+              <p class="text-xs text-gray-400 mt-0.5">Esta acción no se puede deshacer</p>
+            </div>
+          </div>
+          <button @click="closeDeleteModal" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">✕</button>
+        </div>
+
+        <div class="p-6 space-y-4">
+          <div class="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 flex items-start gap-2">
+            <span class="text-amber-500 mt-0.5">⚠️</span>
+            <p class="text-xs text-amber-700">
+              La solicitud pasará a eliminados y será <strong>purgada automáticamente después de 15 días</strong>.
+            </p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+              Motivo de eliminación <span class="text-red-500">*</span>
+            </label>
+            <textarea
+              v-model="deleteReason"
+              rows="3"
+              :class="['w-full px-3 py-2.5 border rounded-xl text-sm focus:ring-2 focus:ring-red-400 focus:border-transparent outline-none resize-none transition-colors', deleteReasonError ? 'border-red-400 bg-red-50' : 'border-gray-200']"
+              placeholder="Describe el motivo por el que se elimina esta solicitud..."
+              @input="deleteReasonError = false"
+            />
+            <p v-if="deleteReasonError" class="text-xs text-red-500 mt-1">El motivo es obligatorio para eliminar.</p>
+          </div>
+
+          <div class="flex gap-3 pt-1">
+            <button @click="confirmDelete" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-xl font-medium text-sm transition-colors">
+              Confirmar eliminación
+            </button>
+            <button @click="closeDeleteModal" class="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-xl hover:bg-gray-200 font-medium text-sm transition-colors">
+              Cancelar
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
 
